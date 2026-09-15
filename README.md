@@ -14,13 +14,13 @@ Requires `ai` v7 and `zod` as peer dependencies, and Node 22+.
 
 ```ts
 import { generateText, stepCountIs } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { anthropic } from '@ai-sdk/anthropic';
 import { createZenrowsTools } from '@zenrows/ai-sdk-tools';
 
 const zenrows = createZenrowsTools({ apiKey: process.env.ZENROWS_API_KEY! });
 
 const { text } = await generateText({
-  model: openai('gpt-4o'),
+  model: anthropic('claude-sonnet-4-5'),
   prompt: 'Read https://news.ycombinator.com and list the top three stories.',
   tools: zenrows,
   stopWhen: stepCountIs(5),
@@ -48,7 +48,7 @@ want one:
 import { scrapeUrl } from '@zenrows/ai-sdk-tools';
 
 const result = await generateText({
-  model: openai('gpt-4o'),
+  model: anthropic('claude-sonnet-4-5'),
   prompt: 'Summarise https://example.com',
   tools: { scrapeUrl: scrapeUrl({ apiKey: process.env.ZENROWS_API_KEY! }) },
   stopWhen: stepCountIs(3),
@@ -60,14 +60,14 @@ const result = await generateText({
 ```ts
 // app/api/chat/route.ts
 import { streamText, stepCountIs } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { anthropic } from '@ai-sdk/anthropic';
 import { createZenrowsTools } from '@zenrows/ai-sdk-tools';
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = streamText({
-    model: openai('gpt-4o'),
+    model: anthropic('claude-sonnet-4-5'),
     system: 'You are a research assistant. When asked about a URL, read it before answering.',
     messages,
     tools: createZenrowsTools({ apiKey: process.env.ZENROWS_API_KEY! }),
