@@ -12,9 +12,9 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
     devDependencies:
-      '@ai-sdk/openai':
-        specifier: ^4.0.66
-        version: 4.0.66(zod@4.6.5)
+      '@ai-sdk/anthropic':
+        specifier: ^4.0.53
+        version: 4.0.53(zod@4.6.5)
       '@biomejs/biome':
         specifier: 1.8.1
         version: 1.8.1
@@ -42,14 +42,14 @@ importers:
 
 packages:
 
-  '@ai-sdk/gateway@4.0.81':
-    resolution: {integrity: sha512-9TdKEg2l/qfaK7L4gC1FkrHNBrEXQjZSV3DvkRLCXkOSJTzojmarCn19ROWBbrlHqFVbW7OSOwQqz1n7ku9HQA==}
+  '@ai-sdk/anthropic@4.0.53':
+    resolution: {integrity: sha512-JMxAuCFte6mFOvoaUcig3Dp2LObin0wU2Li8ncsveh7hHKW7cG3g1bFjooxn1paxeT8UUf5XMSjhxtXG9wFLig==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai@4.0.66':
-    resolution: {integrity: sha512-W4GooZjROdOmf7dfjWlRWNVs+Vvr7ZwfDZbyAJRPo1bgQbpRoDd9ZcCwy/PX1X0s2G7B/dhN2RWOORsHtr0wGg==}
+  '@ai-sdk/gateway@4.0.81':
+    resolution: {integrity: sha512-9TdKEg2l/qfaK7L4gC1FkrHNBrEXQjZSV3DvkRLCXkOSJTzojmarCn19ROWBbrlHqFVbW7OSOwQqz1n7ku9HQA==}
     engines: {node: '>=22'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1027,17 +1027,17 @@ packages:
 
 snapshots:
 
+  '@ai-sdk/anthropic@4.0.53(zod@4.6.5)':
+    dependencies:
+      '@ai-sdk/provider': 4.0.14
+      '@ai-sdk/provider-utils': 5.0.40(zod@4.6.5)
+      zod: 4.6.5
+
   '@ai-sdk/gateway@4.0.81(zod@4.6.5)':
     dependencies:
       '@ai-sdk/provider': 4.0.14
       '@ai-sdk/provider-utils': 5.0.40(zod@4.6.5)
       '@vercel/oidc': 3.2.0
-      zod: 4.6.5
-
-  '@ai-sdk/openai@4.0.66(zod@4.6.5)':
-    dependencies:
-      '@ai-sdk/provider': 4.0.14
-      '@ai-sdk/provider-utils': 5.0.40(zod@4.6.5)
       zod: 4.6.5
 
   '@ai-sdk/provider-utils@5.0.40(zod@4.6.5)':
