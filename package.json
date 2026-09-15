@@ -24,7 +24,8 @@
     "format": "biome format --write .",
     "check": "biome check .",
     "typecheck": "tsc --noEmit",
-    "example": "tsx --env-file-if-exists=.env examples/research-agent.ts"
+    "example": "tsx --env-file-if-exists=.env examples/research-agent.ts",
+    "check:live": "tsx --env-file-if-exists=.env examples/tools-only.ts"
   },
   "keywords": [
     "ai",

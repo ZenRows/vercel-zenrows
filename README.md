@@ -133,6 +133,13 @@ that succeeded rather than for the most expensive one up front. Every tool
 result carries `creditsSpent`, so the model can report what a piece of research
 cost.
 
+## Checking it against the live API
+
+`pnpm check:live` runs every tool against Zenrows directly, without a model or
+an LLM provider key — it only needs `ZENROWS_API_KEY`. `pnpm example` runs the
+same tools through a real `generateText` tool-call loop and additionally needs
+`ANTHROPIC_API_KEY`.
+
 ## Links
 
 - [Zenrows documentation](https://docs.zenrows.com)
