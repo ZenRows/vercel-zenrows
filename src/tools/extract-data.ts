@@ -1,6 +1,6 @@
 import { type Tool, tool } from "ai";
 import { z } from "zod";
-import { createClient, describeFailure, resolveTier } from "../client.js";
+import { createClient, describeFailure, isEmptyResult, resolveTier } from "../client.js";
 import type { ZenrowsExtractOptions } from "../types.js";
 
 const extractDataInput = z.object({
@@ -67,12 +67,7 @@ export function extractData(
         data = body;
       }
 
-      const empty =
-        data == null ||
-        (Array.isArray(data) && data.length === 0) ||
-        (typeof data === "object" && Object.keys(data as object).length === 0);
-
-      if (empty) {
+      if (isEmptyResult(data)) {
         return {
           data,
           note:
