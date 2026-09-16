@@ -100,7 +100,15 @@ await check(
 
 await check(
   "scrape a protected page",
-  () => tools.scrapeUrl.execute?.({ url: PROTECTED }, ctx),
+  async () => {
+    // Zenrows returns an empty 200 on this page often enough that a single
+    // attempt is not a fair check. One retry, then it counts.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const out = (await tools.scrapeUrl.execute?.({ url: PROTECTED }, ctx)) as Out;
+      if (!out?.error) return out;
+    }
+    return (await tools.scrapeUrl.execute?.({ url: PROTECTED }, ctx)) as Out;
+  },
   (out) =>
     typeof out.content === "string" && /bypassed/i.test(out.content)
       ? true

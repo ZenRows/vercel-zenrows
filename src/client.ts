@@ -76,6 +76,26 @@ export async function describeFailure(response: Response, url: string): Promise<
   return `Zenrows returned HTTP ${status} for ${url}.${tag} ${detail}`.trim();
 }
 
+/**
+ * Did Extract actually find anything?
+ *
+ * A selector that matches nothing does not come back as `{}` — Zenrows returns
+ * the key with an empty value, e.g. `{"price": ""}`. Counting keys therefore
+ * reports a match that is not there, and the model goes on to reason about a
+ * field it never got. Empty strings, empty arrays and empty nested objects all
+ * count as nothing found; numbers, booleans and `false` are real values.
+ */
+export function isEmptyResult(data: unknown): boolean {
+  if (data == null) return true;
+  if (typeof data === "string") return data.trim() === "";
+  if (Array.isArray(data)) return data.length === 0 || data.every(isEmptyResult);
+  if (typeof data === "object") {
+    const values = Object.values(data as Record<string, unknown>);
+    return values.length === 0 || values.every(isEmptyResult);
+  }
+  return false;
+}
+
 export function truncate(text: string, max: number): { text: string; truncated: boolean } {
   if (text.length <= max) return { text, truncated: false };
   return { text: text.slice(0, max), truncated: true };
