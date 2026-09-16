@@ -1,0 +1,39 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - documentation
+    authors:
+      - octocat
+      - dependabot
+  categories:
+    - title: 🌟 Features
+      labels:
+        - feature
+    - title: 🐛 Bug Fixes
+      labels:
+        - bug
+    - title: 💥 Breaking Changes
+      labels:
+        - breaking
+    - title: ⚠️ Deprecated Features
+      labels:
+        - deprecated
+    - title: ⚡ Improvement Features
+      labels:
+        - improvement
+    - title: 🔒 Security Fixes
+      labels:
+        - security
+    - title: 📈 Performance Fixes
+      labels:
+        - performance
+    - title: 👕 Refactoring
+      labels:
+        - refactoring
+    - title: 🍭 Examples
+      labels:
+        - example
+    - title: 🪄 Other Changes
+      labels:
+        - "*"
