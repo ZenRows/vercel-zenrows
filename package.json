@@ -59,7 +59,7 @@
   "devDependencies": {
     "@ai-sdk/anthropic": "^4.0.53",
     "@biomejs/biome": "1.8.1",
-    "@types/node": "^22.10.0",
+    "@types/node": "^26.5.1",
     "ai": "^7.0.101",
     "tsup": "^8.5.1",
     "tsx": "^4.23.13",
