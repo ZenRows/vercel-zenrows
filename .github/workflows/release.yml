@@ -40,4 +40,14 @@ jobs:
       # Authenticated by the trusted publisher configured on npmjs.com for
       # ZenRows/vercel-zenrows + release.yml. No token, and no --provenance
       # flag: npm attaches provenance automatically when publishing over OIDC.
-      - run: npm publish --access public
+      #
+      # Staged, not direct. That trusted publisher grants `npm stage publish`
+      # only, so `npm publish` comes back as "OIDC permission denied for this
+      # action". Staging uploads the tarball with its provenance and leaves it
+      # for a package maintainer to approve with 2FA:
+      #
+      #   npm stage list @zenrows/ai-sdk-tools
+      #   npm stage approve <stage-id>
+      #
+      # The release is not on the registry until someone approves it.
+      - run: npm stage publish
