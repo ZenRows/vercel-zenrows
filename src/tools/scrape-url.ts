@@ -1,8 +1,8 @@
 import { type Tool, tool } from "ai";
 import { z } from "zod";
 import {
-  DEFAULT_MAX_CONTENT_LENGTH,
   createClient,
+  DEFAULT_MAX_CONTENT_LENGTH,
   describeFailure,
   resolveTier,
   truncate,
