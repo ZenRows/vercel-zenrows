@@ -20,6 +20,9 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
           cache: pnpm
+      # Node 22 ships npm 10.9, and trusted publishing needs 11.5.1 or later.
+      # Without this the publish falls back to token auth and 401s.
+      - run: npm install -g npm@^11.5.1
       - run: pnpm install --frozen-lockfile
       - name: Verify tag matches package.json version
         if: github.event_name == 'release'
@@ -34,6 +37,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test -- --run
       - run: pnpm build
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Authenticated by the trusted publisher configured on npmjs.com for
+      # ZenRows/vercel-zenrows + release.yml. No token, and no --provenance
+      # flag: npm attaches provenance automatically when publishing over OIDC.
+      - run: npm publish --access public

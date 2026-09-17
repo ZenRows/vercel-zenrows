@@ -1,6 +1,6 @@
 {
   "name": "@zenrows/ai-sdk-tools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Zenrows web scraping tools for the Vercel AI SDK: scrape any URL, extract structured data, and take screenshots, with JavaScript rendering and anti-bot bypass.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
