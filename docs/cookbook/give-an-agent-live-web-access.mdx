@@ -1,0 +1,116 @@
+---
+title: Give an Agent Live Web Access
+description: Learn how to let a model read live web pages in a multi-step tool loop using the AI SDK and Node.
+tags: ['tools', 'agents', 'node']
+---
+
+# Give an Agent Live Web Access
+
+A model answers from what it was trained on. To answer a question about a page
+as it exists right now, it needs a tool that fetches the page — and more than
+one step, so it can read what came back and write an answer from it.
+
+This recipe uses [`@zenrows/ai-sdk-tools`](https://www.npmjs.com/package/@zenrows/ai-sdk-tools),
+a community-maintained toolset that returns page content as Markdown and handles
+JavaScript rendering and anti-bot protection. Any tool that returns text works
+the same way — what makes it an agent is `stopWhen`.
+
+```bash
+pnpm add ai @ai-sdk/anthropic @zenrows/ai-sdk-tools zod
+```
+
+```ts
+import { anthropic } from '@ai-sdk/anthropic';
+import { createZenrowsTools } from '@zenrows/ai-sdk-tools';
+import { generateText, stepCountIs } from 'ai';
+
+const zenrows = createZenrowsTools({
+  apiKey: process.env.ZENROWS_API_KEY!,
+});
+
+const { text } = await generateText({
+  model: anthropic('claude-sonnet-4-5'),
+  tools: zenrows,
+  stopWhen: stepCountIs(4),
+  prompt:
+    'Read https://www.scrapingcourse.com/ecommerce/ and name three products.',
+});
+
+console.log(text);
+```
+
+```
+1. **Abominable Hoodie** - $69.00
+2. **Adrienne Trek Jacket** - $57.00
+3. **Aeon Capri** - $48.00
+```
+
+Without `stopWhen`, `generateText` returns after the first step — you get the
+tool call, but not an answer written from its result. `stepCountIs(4)` lets the
+model call a tool, read what came back, and answer, with room to fetch a second
+page if the first one did not settle the question.
+
+## Ask for fields instead of a page
+
+`scrapeUrl` returns the whole page. When you only need particular values,
+`extractData` returns them as JSON, which is a fraction of the tokens:
+
+```ts
+const { text } = await generateText({
+  model: anthropic('claude-sonnet-4-5'),
+  tools: zenrows,
+  stopWhen: stepCountIs(4),
+  prompt:
+    'Extract the product titles and prices from ' +
+    'https://www.scrapingcourse.com/ecommerce/ using the CSS selectors ' +
+    '{"title":".product-name","price":".price"}. List the first three.',
+});
+```
+
+```
+1. **Abominable Hoodie** - $69.00
+2. **Adrienne Trek Jacket** - $57.00
+3. **Aeon Capri** - $48.00
+```
+
+Leave the selectors out and Zenrows decides what the page is about and extracts
+that instead — useful when you do not know the markup ahead of time.
+
+## Let the model look at the page
+
+`takeScreenshot` returns an image through `toModelOutput`, so a multimodal model
+sees the rendered page rather than a base64 string it cannot read. Use it for
+questions about layout or design, where the text alone does not answer them:
+
+```ts
+const { text } = await generateText({
+  model: anthropic('claude-sonnet-4-5'),
+  tools: zenrows,
+  stopWhen: stepCountIs(4),
+  prompt:
+    'Take a screenshot of https://www.scrapingcourse.com/ecommerce/ and ' +
+    'describe the layout in two sentences. Do not read the page as text.',
+});
+```
+
+```
+The page displays an e-commerce test site with a clean, grid-based layout
+showing product cards arranged in rows, with each card containing a product
+image, title, price, and action button. The header contains the site title,
+search bar, and shopping cart icon, while a sorting dropdown and pagination
+controls appear above and below the product grid respectively.
+```
+
+## Keep the context window in hand
+
+A single content-heavy page can fill a context window on its own. The toolset
+truncates page content at 100,000 characters — roughly 25k tokens — and tells the
+model that it truncated. Lower it when you expect to visit several pages in one
+loop:
+
+```ts
+const zenrows = createZenrowsTools({
+  apiKey: process.env.ZENROWS_API_KEY!,
+  maxContentLength: 20_000,
+});
+```
