@@ -22,7 +22,7 @@ pnpm add ai @ai-sdk/anthropic @zenrows/ai-sdk-tools zod
 ```ts
 import { anthropic } from '@ai-sdk/anthropic';
 import { createZenrowsTools } from '@zenrows/ai-sdk-tools';
-import { generateText, stepCountIs } from 'ai';
+import { generateText, isStepCount } from 'ai';
 
 const zenrows = createZenrowsTools({
   apiKey: process.env.ZENROWS_API_KEY!,
@@ -31,7 +31,7 @@ const zenrows = createZenrowsTools({
 const { text } = await generateText({
   model: anthropic('claude-sonnet-4-5'),
   tools: zenrows,
-  stopWhen: stepCountIs(4),
+  stopWhen: isStepCount(4),
   prompt:
     'Read https://www.scrapingcourse.com/ecommerce/ and name three products.',
 });
@@ -46,7 +46,7 @@ console.log(text);
 ```
 
 Without `stopWhen`, `generateText` returns after the first step — you get the
-tool call, but not an answer written from its result. `stepCountIs(4)` lets the
+tool call, but not an answer written from its result. `isStepCount(4)` lets the
 model call a tool, read what came back, and answer, with room to fetch a second
 page if the first one did not settle the question.
 
@@ -59,7 +59,7 @@ page if the first one did not settle the question.
 const { text } = await generateText({
   model: anthropic('claude-sonnet-4-5'),
   tools: zenrows,
-  stopWhen: stepCountIs(4),
+  stopWhen: isStepCount(4),
   prompt:
     'Extract the product titles and prices from ' +
     'https://www.scrapingcourse.com/ecommerce/ using the CSS selectors ' +
@@ -86,7 +86,7 @@ questions about layout or design, where the text alone does not answer them:
 const { text } = await generateText({
   model: anthropic('claude-sonnet-4-5'),
   tools: zenrows,
-  stopWhen: stepCountIs(4),
+  stopWhen: isStepCount(4),
   prompt:
     'Take a screenshot of https://www.scrapingcourse.com/ecommerce/ and ' +
     'describe the layout in two sentences. Do not read the page as text.',
