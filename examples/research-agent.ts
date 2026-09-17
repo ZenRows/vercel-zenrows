@@ -7,7 +7,7 @@
  * tool-call loop, which is also how the package is verified before a release.
  */
 import { anthropic } from "@ai-sdk/anthropic";
-import { generateText, stepCountIs } from "ai";
+import { generateText, isStepCount } from "ai";
 import { createZenrowsTools } from "../src/index.js";
 
 const apiKey = process.env.ZENROWS_API_KEY;
@@ -24,7 +24,7 @@ async function run(label: string, prompt: string) {
     model: anthropic(MODEL),
     prompt,
     tools: zenrows,
-    stopWhen: stepCountIs(4),
+    stopWhen: isStepCount(4),
   });
 
   for (const step of steps) {

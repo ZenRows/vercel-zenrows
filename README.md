@@ -13,7 +13,7 @@ Requires `ai` v7 and `zod` as peer dependencies, and Node 22+.
 ## Quick start
 
 ```ts
-import { generateText, stepCountIs } from 'ai';
+import { generateText, isStepCount } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { createZenrowsTools } from '@zenrows/ai-sdk-tools';
 
@@ -23,7 +23,7 @@ const { text } = await generateText({
   model: anthropic('claude-sonnet-4-5'),
   prompt: 'Read https://news.ycombinator.com and list the top three stories.',
   tools: zenrows,
-  stopWhen: stepCountIs(5),
+  stopWhen: isStepCount(5),
 });
 
 console.log(text);
@@ -51,7 +51,7 @@ const result = await generateText({
   model: anthropic('claude-sonnet-4-5'),
   prompt: 'Summarise https://example.com',
   tools: { scrapeUrl: scrapeUrl({ apiKey: process.env.ZENROWS_API_KEY! }) },
-  stopWhen: stepCountIs(3),
+  stopWhen: isStepCount(3),
 });
 ```
 
@@ -59,7 +59,7 @@ const result = await generateText({
 
 ```ts
 // app/api/chat/route.ts
-import { streamText, stepCountIs } from 'ai';
+import { isStepCount, streamText } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { createZenrowsTools } from '@zenrows/ai-sdk-tools';
 
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     system: 'You are a research assistant. When asked about a URL, read it before answering.',
     messages,
     tools: createZenrowsTools({ apiKey: process.env.ZENROWS_API_KEY! }),
-    stopWhen: stepCountIs(10),
+    stopWhen: isStepCount(10),
   });
 
   return result.toUIMessageStreamResponse();

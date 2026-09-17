@@ -13,7 +13,7 @@ import type { ZenrowsToolsOptions } from "./types.js";
  *   model: openai('gpt-4o'),
  *   prompt: 'Read https://example.com and summarise it.',
  *   tools: zenrows,
- *   stopWhen: stepCountIs(5),
+ *   stopWhen: isStepCount(5),
  * });
  */
 export function createZenrowsTools(options: ZenrowsToolsOptions) {
