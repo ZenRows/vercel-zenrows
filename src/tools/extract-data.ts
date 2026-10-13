@@ -10,7 +10,23 @@ import {
 } from "../client.js";
 import type { ZenrowsExtractOptions } from "../types.js";
 
-const extractDataInput = z.object({
+/** Every `outputs` filter the API accepts: https://docs.zenrows.com/fetch/features/output-filters */
+export const OUTPUT_FILTERS = [
+  "emails",
+  "phone_numbers",
+  "headings",
+  "images",
+  "audios",
+  "videos",
+  "links",
+  "menus",
+  "hashtags",
+  "metadata",
+  "tables",
+  "favicon",
+] as const;
+
+export const extractDataInput = z.object({
   url: z.string().url().describe("Full URL to extract from, including https://."),
   cssSelectors: z
     .record(z.string(), z.string())
@@ -20,7 +36,7 @@ const extractDataInput = z.object({
         "Use when you know the page structure and want named fields back.",
     ),
   outputs: z
-    .array(z.enum(["emails", "phone_numbers", "links", "images", "headings", "tables"]))
+    .array(z.enum(OUTPUT_FILTERS))
     .optional()
     .describe("Collect every instance of these content types across the page."),
 });
