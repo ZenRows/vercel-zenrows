@@ -89,7 +89,7 @@ Every option is set once, on the factory. The model never sees them.
 | `defaultResponseType` | `'markdown'` | Format `scrapeUrl` returns when the model does not ask for one. |
 | `maxContentLength` | `100_000` | Characters of page content handed to the model before truncation. |
 | `concurrency` | `5` | Concurrent requests to Zenrows. |
-| `retries` | `0` | Retries on 422/503/504 and network errors. |
+| `retries` | `0` | Retries on 422/503/504 and network errors. Leave it at `0` for `extractData`: an Extract answer of 422 `no_data_extracted` is final and comes back the same on every retry. |
 
 ### On Adaptive Stealth
 
@@ -116,8 +116,8 @@ fields you want.
 
 ## What the tools return
 
-`scrapeUrl` returns `{ content, truncated, url, finalUrl, creditsSpent }`.
-`extractData` returns `{ data, url, creditsSpent }`. Both return
+`scrapeUrl` returns `{ content, truncated, url, finalUrl, creditsSpent, costUsd }`.
+`extractData` returns `{ data, url, creditsSpent, costUsd }`. Both return
 `{ error }` instead when the call fails, with a message the model can act on —
 they do not throw, so a failed scrape costs a step rather than the run.
 
@@ -130,8 +130,15 @@ base64 string.
 
 Zenrows bills per request. Adaptive stealth means you pay for the configuration
 that succeeded rather than for the most expensive one up front. Every tool
-result carries `creditsSpent`, so the model can report what a piece of research
-cost.
+result carries `creditsSpent`, the credits the request used (from the
+`X-Request-Credits` header), and `costUsd`, its cost in US dollars (from
+`X-Request-Cost`), so the model can report what a piece of research cost.
+
+When Extract recognises a page but finds no data on it, Zenrows answers 422
+`no_data_extracted` and does not charge the request. `extractData` returns that
+as an `error` telling the model to read the page with `scrapeUrl` instead of
+repeating the call. A domain Extract has not been prepared for answers 403
+`REQS007`, also not charged.
 
 ## Checking it against the live API
 

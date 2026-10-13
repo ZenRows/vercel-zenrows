@@ -42,6 +42,26 @@ export function resolveTier(config: {
   };
 }
 
+/** Extract's answer when it knows the page but none of the fields came back filled. */
+export const NO_DATA_EXTRACTED = "no_data_extracted";
+
+function numericHeader(response: Response, name: string): number | undefined {
+  const raw = response.headers.get(name);
+  if (raw == null || raw.trim() === "") return undefined;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : undefined;
+}
+
+/** Credits the request spent, from `X-Request-Credits`. */
+export function readCredits(response: Response): number | undefined {
+  return numericHeader(response, "x-request-credits");
+}
+
+/** What the request cost in US dollars, from `X-Request-Cost`. */
+export function readCostUsd(response: Response): number | undefined {
+  return numericHeader(response, "x-request-cost");
+}
+
 /** Everything a failed Zenrows call should tell the model, and nothing more. */
 export async function describeFailure(response: Response, url: string): Promise<string> {
   const status = response.status;
@@ -61,11 +81,29 @@ export async function describeFailure(response: Response, url: string): Promise<
   }
   const tag = code ? ` (${code})` : "";
 
+  // Extract has not been prepared for this domain, or for this kind of page on it.
+  // Not an auth problem, so it must not read as "check the API key".
+  if (status === 403 && code.toUpperCase() === "REQS007") {
+    return [
+      `Extract is not prepared for ${url} yet${tag}, and the request was not charged.`,
+      "Call extractData again with cssSelectors or outputs, or read the page with scrapeUrl.",
+    ].join(" ");
+  }
   if (status === 401 || status === 403) {
     return `Zenrows rejected the request for ${url} — check the API key.${tag}`;
   }
   if (status === 402) {
     return `Zenrows account is out of credits, or this feature is not on the plan.${tag} ${detail}`.trim();
+  }
+  // Extract applied its extraction but no field came back filled. The answer is
+  // deterministic and not charged, so repeating the same request returns it again.
+  if (status === 422 && code.toLowerCase() === NO_DATA_EXTRACTED) {
+    return [
+      `Extract found no data on ${url}${tag}, and the request was not charged.`,
+      "The page may not have rendered or may be a block page: read it with scrapeUrl",
+      "(pass waitForSelector for content that loads late) to see what came back.",
+      "Do not repeat the same extractData call.",
+    ].join(" ");
   }
   if (status === 422) {
     return `Zenrows could not scrape ${url}${tag}. ${detail}`.trim();

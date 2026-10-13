@@ -1,6 +1,13 @@
 import { type Tool, tool } from "ai";
 import { z } from "zod";
-import { createClient, describeFailure, isEmptyResult, resolveTier } from "../client.js";
+import {
+  createClient,
+  describeFailure,
+  isEmptyResult,
+  readCostUsd,
+  readCredits,
+  resolveTier,
+} from "../client.js";
 import type { ZenrowsExtractOptions } from "../types.js";
 
 const extractDataInput = z.object({
@@ -24,7 +31,10 @@ export interface ExtractDataOutput {
   data?: unknown;
   note?: string;
   url?: string;
-  creditsSpent?: string;
+  /** Credits the request spent (`X-Request-Credits`). */
+  creditsSpent?: number;
+  /** What the request cost in US dollars (`X-Request-Cost`). */
+  costUsd?: number;
   error?: string;
 }
 
@@ -75,14 +85,16 @@ export function extractData(
             "for this page — read it with scrapeUrl using responseType html to find the " +
             "real ones, or call extractData again with no options.",
           url,
-          creditsSpent: response.headers.get("x-request-cost") ?? undefined,
+          creditsSpent: readCredits(response),
+          costUsd: readCostUsd(response),
         };
       }
 
       return {
         data,
         url,
-        creditsSpent: response.headers.get("x-request-cost") ?? undefined,
+        creditsSpent: readCredits(response),
+        costUsd: readCostUsd(response),
       };
     },
   });

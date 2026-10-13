@@ -4,6 +4,8 @@ import {
   createClient,
   DEFAULT_MAX_CONTENT_LENGTH,
   describeFailure,
+  readCostUsd,
+  readCredits,
   resolveTier,
   truncate,
 } from "../client.js";
@@ -42,7 +44,10 @@ export interface ScrapeUrlOutput {
   truncated?: boolean;
   url?: string;
   finalUrl?: string;
-  creditsSpent?: string;
+  /** Credits the request spent (`X-Request-Credits`). */
+  creditsSpent?: number;
+  /** What the request cost in US dollars (`X-Request-Cost`). */
+  costUsd?: number;
   error?: string;
 }
 
@@ -99,7 +104,8 @@ export function scrapeUrl(options: ZenrowsScrapeOptions): Tool<ScrapeUrlInput, S
         truncated,
         url,
         finalUrl: response.headers.get("zr-final-url") ?? url,
-        creditsSpent: response.headers.get("x-request-cost") ?? undefined,
+        creditsSpent: readCredits(response),
+        costUsd: readCostUsd(response),
       };
     },
   });
