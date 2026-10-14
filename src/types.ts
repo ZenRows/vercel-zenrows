@@ -24,7 +24,10 @@ export interface ZenrowsToolsOptions {
   maxContentLength?: number;
   /** Concurrent in-flight requests to Zenrows. Default 5 (SDK default). */
   concurrency?: number;
-  /** Retries on 422/503/504 and network errors. Default 0 (SDK default). */
+  /**
+   * Retries on 422/503/504 and network errors, except Extract's 422
+   * `no_data_extracted`, which is a final answer. Default 0 (SDK default).
+   */
   retries?: number;
 }
 

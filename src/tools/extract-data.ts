@@ -1,9 +1,32 @@
 import { type Tool, tool } from "ai";
 import { z } from "zod";
-import { createClient, describeFailure, isEmptyResult, resolveTier } from "../client.js";
+import {
+  createClient,
+  describeFailure,
+  isEmptyResult,
+  readCostUsd,
+  readCredits,
+  resolveTier,
+} from "../client.js";
 import type { ZenrowsExtractOptions } from "../types.js";
 
-const extractDataInput = z.object({
+/** Every `outputs` filter the API accepts: https://docs.zenrows.com/fetch/features/output-filters */
+export const OUTPUT_FILTERS = [
+  "emails",
+  "phone_numbers",
+  "headings",
+  "images",
+  "audios",
+  "videos",
+  "links",
+  "menus",
+  "hashtags",
+  "metadata",
+  "tables",
+  "favicon",
+] as const;
+
+export const extractDataInput = z.object({
   url: z.string().url().describe("Full URL to extract from, including https://."),
   cssSelectors: z
     .record(z.string(), z.string())
@@ -13,7 +36,7 @@ const extractDataInput = z.object({
         "Use when you know the page structure and want named fields back.",
     ),
   outputs: z
-    .array(z.enum(["emails", "phone_numbers", "links", "images", "headings", "tables"]))
+    .array(z.enum(OUTPUT_FILTERS))
     .optional()
     .describe("Collect every instance of these content types across the page."),
 });
@@ -24,7 +47,10 @@ export interface ExtractDataOutput {
   data?: unknown;
   note?: string;
   url?: string;
-  creditsSpent?: string;
+  /** Credits the request spent (`X-Request-Credits`). */
+  creditsSpent?: number;
+  /** What the request cost in US dollars (`X-Request-Cost`). */
+  costUsd?: number;
   error?: string;
 }
 
@@ -75,14 +101,16 @@ export function extractData(
             "for this page — read it with scrapeUrl using responseType html to find the " +
             "real ones, or call extractData again with no options.",
           url,
-          creditsSpent: response.headers.get("x-request-cost") ?? undefined,
+          creditsSpent: readCredits(response),
+          costUsd: readCostUsd(response),
         };
       }
 
       return {
         data,
         url,
-        creditsSpent: response.headers.get("x-request-cost") ?? undefined,
+        creditsSpent: readCredits(response),
+        costUsd: readCostUsd(response),
       };
     },
   });

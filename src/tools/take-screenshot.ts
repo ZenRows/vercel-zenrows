@@ -1,6 +1,6 @@
 import { type Tool, tool } from "ai";
 import { z } from "zod";
-import { createClient, describeFailure, resolveTier } from "../client.js";
+import { createClient, describeFailure, readCostUsd, readCredits, resolveTier } from "../client.js";
 import type { ZenrowsScreenshotOptions } from "../types.js";
 
 export interface ScreenshotResult {
@@ -8,7 +8,10 @@ export interface ScreenshotResult {
   mediaType?: string;
   bytes?: number;
   url?: string;
-  creditsSpent?: string;
+  /** Credits the request spent (`X-Request-Credits`). */
+  creditsSpent?: number;
+  /** What the request cost in US dollars (`X-Request-Cost`). */
+  costUsd?: number;
   error?: string;
 }
 
@@ -67,7 +70,8 @@ export function takeScreenshot(
         mediaType: format === "jpeg" ? "image/jpeg" : "image/png",
         bytes: bytes.byteLength,
         url,
-        creditsSpent: response.headers.get("x-request-cost") ?? undefined,
+        creditsSpent: readCredits(response),
+        costUsd: readCostUsd(response),
       };
     },
     // Hand the model the actual image rather than a base64 string it cannot see.
