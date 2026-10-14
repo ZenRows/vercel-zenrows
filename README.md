@@ -89,7 +89,7 @@ Every option is set once, on the factory. The model never sees them.
 | `defaultResponseType` | `'markdown'` | Format `scrapeUrl` returns when the model does not ask for one. |
 | `maxContentLength` | `100_000` | Characters of page content handed to the model before truncation. |
 | `concurrency` | `5` | Concurrent requests to Zenrows. |
-| `retries` | `0` | Retries on 422/503/504 and network errors. Leave it at `0` for `extractData`: an Extract answer of 422 `no_data_extracted` is final and comes back the same on every retry. |
+| `retries` | `0` | Retries on 422/503/504 and network errors, except Extract's 422 `no_data_extracted`, which is a final answer. |
 
 ### On Adaptive Stealth
 

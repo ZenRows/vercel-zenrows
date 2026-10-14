@@ -52,7 +52,7 @@
     "access": "public"
   },
   "dependencies": {
-    "zenrows": "^2.0.3"
+    "zenrows": "^2.3.0"
   },
   "peerDependencies": {
     "ai": "^7.0.0",

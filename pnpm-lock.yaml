@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       zenrows:
-        specifier: ^2.0.3
-        version: 2.0.3
+        specifier: ^2.3.0
+        version: 2.3.0
     devDependencies:
       '@ai-sdk/anthropic':
         specifier: ^4.0.53
@@ -990,8 +990,8 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
-  zenrows@2.0.3:
-    resolution: {integrity: sha512-sCHjeF2rWuMgJCMy4ZRmmPdlAsrQisih+8HiUZtEi/pDo0vLv8CI8W8uEYc+uOOMUlTbK9W7FlSzv5JycGfpFA==}
+  zenrows@2.3.0:
+    resolution: {integrity: sha512-fLr3l8rPlSOtl5kdq7d/ph48azhzjlW+Ulo4kRHyAX5RMBw8dg0d9aeLByH41HVDoa3HTqCrscgdhLCcpMt//w==}
     engines: {node: '>=20'}
 
   zod@4.6.5:
@@ -1689,7 +1689,7 @@ snapshots:
       siginfo: 2.0.0
       stackback: 0.0.2
 
-  zenrows@2.0.3:
+  zenrows@2.3.0:
     dependencies:
       fastq: 1.20.3
       fetch-retry: 6.0.0
