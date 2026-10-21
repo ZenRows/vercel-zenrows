@@ -4,11 +4,21 @@ import { createZenrowsTools } from "../src/index.js";
 
 const url = "https://example.com/product/1";
 
-function problem(status: number, code: string, detail = ""): Response {
-  return new Response(JSON.stringify({ code, detail }), {
+function problem(
+  status: number,
+  code: string,
+  detail = "",
+  extra: { title?: string; reason?: string } = {},
+): Response {
+  return new Response(JSON.stringify({ code, detail, ...extra }), {
     status,
     headers: { "content-type": "application/problem+json" },
   });
+}
+
+/** A REQS007 as the API sends it: the case is readable from `title`. */
+function refusedPage(title: string, reason?: string): Response {
+  return problem(403, "REQS007", "", { title: `${title} example.com (REQS007)`, reason });
 }
 
 describe("readCredits / readCostUsd", () => {
@@ -41,9 +51,51 @@ describe("describeFailure", () => {
     expect(message).toMatch(/could not scrape/);
   });
 
-  it("explains REQS007 as a domain Extract is not prepared for, not as a bad key", async () => {
+  it("tells the caller to prepare the domain only when nothing is prepared", async () => {
+    const message = await describeFailure(
+      refusedPage("Extract is not prepared for the requested domain"),
+      url,
+    );
+    expect(message).toMatch(/Nothing is prepared for this domain yet/);
+    expect(message).toMatch(/Preparing it and retrying will work/);
+    expect(message).not.toMatch(/API key/);
+  });
+
+  // The case the old single message got wrong: the domain IS prepared, so sending the
+  // caller to prepare it returns this same 403.
+  it("does not send the caller to prepare a domain that is already prepared", async () => {
+    const message = await describeFailure(
+      refusedPage("Extract did not recognise this page on"),
+      url,
+    );
+    expect(message).toMatch(/does not recognise this page/);
+    expect(message).toMatch(/Preparing the domain again returns the same answer/);
+    expect(message).not.toMatch(/Preparing it and retrying will work/);
+  });
+
+  it("says preparing does not help when Extract is not enabled for the site", async () => {
+    const message = await describeFailure(
+      refusedPage("Extract is not enabled for the requested domain"),
+      url,
+    );
+    expect(message).toMatch(/not enabled for this site/);
+    expect(message).toMatch(/preparing the domain does not change that/);
+  });
+
+  it("prefers reason over title once the API sends it", async () => {
+    const message = await describeFailure(
+      refusedPage("Extract is not prepared for the requested domain", "page_not_recognised"),
+      url,
+    );
+    expect(message).toMatch(/does not recognise this page/);
+    expect(message).not.toMatch(/Nothing is prepared for this domain yet/);
+  });
+
+  it("names no cause for a REQS007 that identifies none of the three", async () => {
     const message = await describeFailure(problem(403, "REQS007"), url);
-    expect(message).toMatch(/not prepared/);
+    expect(message).toMatch(/Extract refused/);
+    expect(message).toMatch(/not charged/);
+    expect(message).toMatch(/It can mean/);
     expect(message).not.toMatch(/API key/);
   });
 

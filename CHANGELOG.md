@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- A `403 REQS007` no longer reports every refusal as an unprepared domain. The error covers three situations and preparing the domain resolves only one of them, so the previous message sent callers to prepare a domain that was already prepared, which returns the same answer. The tools now read the response's `title` (and `reason`, once the API sends it) and say which of the three it is: nothing prepared for the domain, the domain prepared but this page not recognised, or Extract not enabled for the site. A refusal that identifies none of the three no longer names a cause at all.
+
 ## [0.2.0]
 
 ### Changed
