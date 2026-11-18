@@ -29,7 +29,7 @@ const { text } = await generateText({
 console.log(text);
 ```
 
-Get an API key at [app.zenrows.com](https://app.zenrows.com/account/settings).
+Get an API key at [app.zenrows.com](https://app.zenrows.com/account/settings?utm_source=vercel&utm_medium=readme&utm_campaign=vercel-zenrows).
 Set it as `ZENROWS_API_KEY`, or pass it however your app handles secrets — the
 key is only ever read by the factory, never by the model.
 
@@ -149,7 +149,7 @@ same tools through a real `generateText` tool-call loop and additionally needs
 
 ## Links
 
-- [Zenrows documentation](https://docs.zenrows.com)
+- [Zenrows documentation](https://docs.zenrows.com?utm_source=vercel&utm_medium=readme&utm_campaign=vercel-zenrows)
 - [AI SDK tool calling](https://ai-sdk.dev/docs/ai-sdk-core/tools-and-tool-calling)
 - [Source](https://github.com/ZenRows/vercel-zenrows) · [Issues](https://github.com/ZenRows/vercel-zenrows/issues)
 
